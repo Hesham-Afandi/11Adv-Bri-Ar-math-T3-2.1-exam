@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>📐 رياضيات 11 متقدم - الإحداثيات القطبية (1.1)</title>
+    <title>📐 Grade 11 Advanced Inspire - Polar Coordinates (1.1)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Cairo', sans-serif; }
+        body.en-mode { font-family: 'Inter', sans-serif; }
         .correct { background-color: #dcfce7 !important; border-color: #16a34a !important; }
         .incorrect { background-color: #fee2e2 !important; border-color: #dc2626 !important; }
         .formula { font-family: 'Times New Roman', serif; font-style: italic; direction: ltr; display: inline-block; }
@@ -20,412 +21,572 @@
         .grade-good { background: #fef3c7; color: #92400e; }
         .grade-pass { background: #dbeafe; color: #1e40af; }
         .grade-fail { background: #fee2e2; color: #991b1b; }
+        
+        /* Language Switcher */
+        .lang-switch {
+            position: fixed; top: 16px; left: 16px; z-index: 100;
+            background: white; padding: 6px; border-radius: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15); display: flex; gap: 4px;
+            border: 2px solid #0d9488;
+        }
+        [dir="ltr"] .lang-switch { left: auto; right: 16px; }
+        .lang-btn {
+            padding: 6px 14px; border-radius: 20px; cursor: pointer; font-weight: bold;
+            transition: all 0.3s; border: none; font-size: 0.875rem;
+            background: transparent; color: #6b7280;
+        }
+        .lang-btn.active { background: #0d9488; color: white; box-shadow: 0 2px 6px rgba(13,148,136,0.4); }
+        .lang-btn:hover:not(.active) { background: #f0fdfa; color: #0d9488; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 p-4 md:p-8 min-h-screen">
 
+    <!-- Language Switcher -->
+    <div class="lang-switch no-print">
+        <button class="lang-btn active" onclick="setLanguage('ar')" id="btn-ar">عربي</button>
+        <button class="lang-btn" onclick="setLanguage('en')" id="btn-en">EN</button>
+    </div>
+
     <!-- Timer -->
     <div id="timer-container" class="max-w-4xl mx-auto mb-4 text-center no-print">
         <div class="bg-white p-4 rounded-xl shadow-md inline-block border-2 border-teal-100">
-            <span class="text-gray-600 ml-2">⏱️ الوقت المتبقي:</span>
+            <span class="text-gray-600 ml-2" data-ar="⏱️ الوقت المتبقي:" data-en="⏱️ Time Remaining:">⏱️ الوقت المتبقي:</span>
             <span id="timer" class="text-2xl font-bold text-teal-600 font-mono">45:00</span>
         </div>
     </div>
 
     <!-- Controls -->
     <div class="max-w-4xl mx-auto mb-6 flex flex-wrap gap-3 justify-center no-print">
-        <button onclick="toggleAnswers()" class="bg-teal-600 hover:bg-teal-700 text-white px-5 py-2 rounded-lg font-medium transition shadow cursor-pointer">
-            👁️ إظهار / إخفاء الإجابات
-        </button>
-        <button onclick="window.print()" class="bg-gray-800 hover:bg-gray-900 text-white px-5 py-2 rounded-lg font-medium transition shadow cursor-pointer">
-            🖨️ طباعة / PDF
-        </button>
+        <button onclick="toggleAnswers()" class="bg-teal-600 hover:bg-teal-700 text-white px-5 py-2 rounded-lg font-medium transition shadow cursor-pointer" data-ar="👁️ إظهار / إخفاء الإجابات" data-en="👁️ Show / Hide Answers">👁️ إظهار / إخفاء الإجابات</button>
+        <button onclick="window.print()" class="bg-gray-800 hover:bg-gray-900 text-white px-5 py-2 rounded-lg font-medium transition shadow cursor-pointer" data-ar="🖨️ طباعة / PDF" data-en="🖨️ Print / PDF">🖨️ طباعة / PDF</button>
     </div>
 
     <!-- Header -->
     <header class="max-w-4xl mx-auto bg-white p-6 rounded-xl shadow-md mb-8 border-r-4 border-teal-600">
         <div class="text-center">
-            <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">📐 رياضيات الصف الثاني عشر عام</h1>
-            <h2 class="text-lg text-teal-600 font-semibold">الإحداثيات القطبية (Polar Coordinates)</h2>
-            <p class="text-sm text-gray-600 mt-2">Plotting, Conversions, Distance Formula & Basic Graphs</p>
+            <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2" data-ar="📐 رياضيات الصف الحادي عشر متقدم - Inspire" data-en="📐 Grade 11 Advanced Mathematics - Inspire">📐 رياضيات الصف الحادي عشر متقدم - Inspire</h1>
+            <h2 class="text-lg text-teal-600 font-semibold" data-ar="الدرس 1.1: الإحداثيات القطبية" data-en="Lesson 1.1: Polar Coordinates">الدرس 1.1: الإحداثيات القطبية</h2>
+            <p class="text-sm text-gray-600 mt-2" data-ar="التمثيل، التحويلات، قانون المسافة، والرسوم البيانية الأساسية" data-en="Plotting, Conversions, Distance Formula & Basic Graphs">التمثيل، التحويلات، قانون المسافة، والرسوم البيانية الأساسية</p>
         </div>
         <div class="mt-4 flex flex-wrap justify-center gap-4 text-sm text-gray-600">
-            <span>📅 التاريخ: <input type="text" class="border-b border-gray-400 bg-transparent w-28 text-center"></span>
-            <span>👤 الاسم: <input type="text" id="studentName" class="border-b border-gray-400 bg-transparent w-32 text-center" placeholder="أدخل الاسم"></span>
-            <span>🏫 الشعبة: <input type="text" id="studentClass" class="border-b border-gray-400 bg-transparent w-28 text-center" placeholder="الفصل"></span>
-            <span>⏱️ المدة: 45 دقيقة</span>
-            <span>📊 المجموع: 100 درجة</span>
+            <span><span data-ar="📅 التاريخ:" data-en="📅 Date:">📅 التاريخ:</span> <input type="text" class="border-b border-gray-400 bg-transparent w-28 text-center"></span>
+            <span><span data-ar="👤 الاسم:" data-en="👤 Name:">👤 الاسم:</span> <input type="text" id="studentName" class="border-b border-gray-400 bg-transparent w-32 text-center" placeholder="Enter name"></span>
+            <span><span data-ar="🏫 الشعبة:" data-en="🏫 Class:">🏫 الشعبة:</span> <input type="text" id="studentClass" class="border-b border-gray-400 bg-transparent w-28 text-center" placeholder="Class"></span>
+            <span><span data-ar="⏱️ المدة: 45 دقيقة" data-en="⏱️ Duration: 45 min">⏱️ المدة: 45 دقيقة</span></span>
+            <span><span data-ar="📊 المجموع: 100 درجة" data-en="📊 Total: 100 pts">📊 المجموع: 100 درجة</span></span>
         </div>
     </header>
 
-    <main class="max-w-4xl mx-auto space-y-8">
-
-        <!-- Section 1: Polar System & Plotting Points -->
-        <section class="bg-white p-6 rounded-xl shadow-lg">
-            <h2 class="text-xl font-bold mb-4 text-teal-700">🔹 الجزء الأول: نظام الإحداثيات القطبية وتمثيل النقاط</h2>
-            <ol id="section1-list" class="space-y-4 text-sm">
-                <li class="border-r-4 border-teal-500 pr-4 py-2" id="q-1">
-                    <strong>1.</strong> في النظام القطبي، يُحدد موقع النقطة باستخدام الزوج المرتب:<br>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q1" value="a" class="ml-2"> أ) <span class="formula">(x, y)</span></label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q1" value="b" class="ml-2"> ب) <span class="formula">(r, θ)</span></label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q1" value="c" class="ml-2"> ج) <span class="formula">(θ, r)</span></label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q1" value="d" class="ml-2"> د) <span class="formula">(y, x)</span></label>
-                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: ب) حيث r نصف القطر و θ الزاوية</div>
-                </li>
-                <li class="border-r-4 border-teal-500 pr-4 py-2" id="q-2">
-                    <strong>2.</strong> إذا كانت قيمة <span class="formula">r</span> سالبة، فإننا نتحرك:<br>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q2" value="a" class="ml-2"> أ) مسافة |r| في اتجاه الزاوية θ</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q2" value="b" class="ml-2"> ب) مسافة |r| في الاتجاه المعاكس تماماً للزاوية θ</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q2" value="c" class="ml-2"> ج) مسافة r في اتجاه عقارب الساعة</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q2" value="d" class="ml-2"> د) لا يمكن أن يكون r سالباً</label>
-                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: ب) ننعكس 180° عن اتجاه الزاوية الأصلية</div>
-                </li>
-                <li class="border-r-4 border-teal-500 pr-4 py-2" id="q-3">
-                    <strong>3.</strong> النقطة <span class="formula">(-1.5, π)</span> تعني عملياً:<br>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q3" value="a" class="ml-2"> أ) التحرك 1.5 وحدة في اتجاه 180°</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q3" value="b" class="ml-2"> ب) التحرك 1.5 وحدة في الاتجاه المعاكس لـ 180° (أي عند 0°)</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q3" value="c" class="ml-2"> ج) التحرك -1.5 وحدة في اتجاه 90°</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q3" value="d" class="ml-2"> د) النقطة تقع في الربع الثاني</label>
-                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: ب) عكس اتجاه π (180°) هو 0°، والمسافة 1.5</div>
-                </li>
-                <li class="border-r-4 border-teal-500 pr-4 py-2" id="q-4">
-                    <strong>4.</strong> الزوايا السالبة في النظام القطبي تعني الدوران:<br>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q4" value="a" class="ml-2"> أ) عكس عقارب الساعة</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q4" value="b" class="ml-2"> ب) في اتجاه عقارب الساعة</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q4" value="c" class="ml-2"> ج) لا يوجد زوايا سالبة</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q4" value="d" class="ml-2"> د) تعتمد على قيمة r</label>
-                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: ب) الموجب عكس العقارب، والسالب مع العقارب</div>
-                </li>
-            </ol>
-        </section>
-
-        <!-- Section 2: Multiple Representations -->
-        <section class="bg-white p-6 rounded-xl shadow-lg">
-            <h2 class="text-xl font-bold mb-4 text-teal-700">🔹 الجزء الثاني: التمثيلات المتعددة للنقطة الواحدة</h2>
-            <ol id="section2-list" class="space-y-4 text-sm">
-                <li class="border-r-4 border-teal-500 pr-4 py-2" id="q-5">
-                    <strong>5.</strong> لإيجاد تمثيل مكافئ لنفس النقطة بإضافة دورات كاملة، نستخدم:<br>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q5" value="a" class="ml-2"> أ) <span class="formula">(r, θ ± 180°n)</span></label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q5" value="b" class="ml-2"> ب) <span class="formula">(r, θ ± 360°n)</span> أو <span class="formula">(r, θ ± 2πn)</span></label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q5" value="c" class="ml-2"> ج) <span class="formula">(-r, θ ± 360°n)</span></label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q5" value="d" class="ml-2"> د) <span class="formula">(r, θ ± 90°n)</span></label>
-                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: ب) إضافة أو طرح 360° (أو 2π) يعطي نفس الموقع</div>
-                </li>
-                <li class="border-r-4 border-teal-500 pr-4 py-2" id="q-6">
-                    <strong>6.</strong> لإيجاد تمثيل مكافئ بعكس الاتجاه، نستخدم الصيغة:<br>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q6" value="a" class="ml-2"> أ) <span class="formula">(r, θ + 180°)</span></label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q6" value="b" class="ml-2"> ب) <span class="formula">(-r, θ ± 180° ± 360°n)</span></label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q6" value="c" class="ml-2"> ج) <span class="formula">(r, -θ)</span></label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q6" value="d" class="ml-2"> د) <span class="formula">(-r, -θ)</span></label>
-                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: ب) نعكس إشارة r ونضيف/نطرح 180°</div>
-                </li>
-                <li class="border-r-4 border-teal-500 pr-4 py-2" id="q-7">
-                    <strong>7.</strong> النقطة <span class="formula">(4, 135°)</span> تكافئ جميع ما يلي ما عدا:<br>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q7" value="a" class="ml-2"> أ) <span class="formula">(4, -225°)</span></label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q7" value="b" class="ml-2"> ب) <span class="formula">(-4, 315°)</span></label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q7" value="c" class="ml-2"> ج) <span class="formula">(-4, -45°)</span></label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q7" value="d" class="ml-2"> د) <span class="formula">(4, 225°)</span></label>
-                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: د) (4, 225°) نقطة مختلفة لأنها بنفس الإشارة الموجبة لكن بزاوية مختلفة ليست دورة كاملة</div>
-                </li>
-                <li class="border-r-4 border-teal-500 pr-4 py-2" id="q-8">
-                    <strong>8.</strong> النقطة الواحدة في النظام القطبي لها عدد من التمثيلات يساوي:<br>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q8" value="a" class="ml-2"> أ) تمثيل واحد فقط</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q8" value="b" class="ml-2"> ب) تمثيلين فقط</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q8" value="c" class="ml-2"> ج) أربعة تمثيلات</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q8" value="d" class="ml-2"> د) عدد لا نهائي من التمثيلات</label>
-                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: د) بسبب إمكانية إضافة دورات كاملة وعكس الاتجاه</div>
-                </li>
-            </ol>
-        </section>
-
-        <!-- Section 3: Conversion Between Systems -->
-        <section class="bg-white p-6 rounded-xl shadow-lg">
-            <h2 class="text-xl font-bold mb-4 text-teal-700">🔹 الجزء الثالث: التحويل بين القطبية والديكارتية</h2>
-            <ol id="section3-list" class="space-y-4 text-sm">
-                <li class="border-r-4 border-teal-500 pr-4 py-2" id="q-9">
-                    <strong>9.</strong> للتحويل من قطبي إلى ديكارتي، نستخدم العلاقتين:<br>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q9" value="a" class="ml-2"> أ) <span class="formula">x = r sin θ, y = r cos θ</span></label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q9" value="b" class="ml-2"> ب) <span class="formula">x = r cos θ, y = r sin θ</span></label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q9" value="c" class="ml-2"> ج) <span class="formula">x = r tan θ, y = r cot θ</span></label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q9" value="d" class="ml-2"> د) <span class="formula">x = r² cos θ, y = r² sin θ</span></label>
-                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: ب) x = r cos θ و y = r sin θ</div>
-                </li>
-                <li class="border-r-4 border-teal-500 pr-4 py-2" id="q-10">
-                    <strong>10.</strong> لإيجاد <span class="formula">r</span> من الإحداثيات الديكارتية، نستخدم:<br>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q10" value="a" class="ml-2"> أ) <span class="formula">r = x + y</span></label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q10" value="b" class="ml-2"> ب) <span class="formula">r = √(x² + y²)</span></label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q10" value="c" class="ml-2"> ج) <span class="formula">r = x² + y²</span></label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q10" value="d" class="ml-2"> د) <span class="formula">r = y/x</span></label>
-                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: ب) حسب نظرية فيثاغورس</div>
-                </li>
-                <li class="border-r-4 border-teal-500 pr-4 py-2" id="q-11">
-                    <strong>11.</strong> عند حساب <span class="formula">θ = tan⁻¹(y/x)</span> وكانت النقطة في الربع الثاني أو الثالث، يجب:<br>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q11" value="a" class="ml-2"> أ) استخدام النتيجة كما هي</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q11" value="b" class="ml-2"> ب) إضافة 90° للنتيجة</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q11" value="c" class="ml-2"> ج) إضافة 180° للنتيجة</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q11" value="d" class="ml-2"> د) طرح 180° من النتيجة</label>
-                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: ج) الآلة تعطي الربع الأول أو الرابع فقط، لذا نضيف 180° للربعين الثاني والثالث</div>
-                </li>
-                <li class="border-r-4 border-teal-500 pr-4 py-2" id="q-12">
-                    <strong>12.</strong> العلاقة المستخدمة لإيجاد الزاوية θ من الديكارتي هي:<br>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q12" value="a" class="ml-2"> أ) <span class="formula">tan θ = x/y</span></label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q12" value="b" class="ml-2"> ب) <span class="formula">sin θ = y/x</span></label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q12" value="c" class="ml-2"> ج) <span class="formula">tan θ = y/x</span></label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q12" value="d" class="ml-2"> د) <span class="formula">cos θ = x/y</span></label>
-                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: ج) tan θ = y/x مع مراعاة الربع الصحيح</div>
-                </li>
-            </ol>
-        </section>
-
-        <!-- Section 4: Distance Formula & Basic Graphs -->
-        <section class="bg-white p-6 rounded-xl shadow-lg">
-            <h2 class="text-xl font-bold mb-4 text-teal-700">🔹 الجزء الرابع: قانون المسافة والرسوم البيانية الأساسية</h2>
-            <ol id="section4-list" class="space-y-4 text-sm">
-                <li class="border-r-4 border-teal-500 pr-4 py-2" id="q-13">
-                    <strong>13.</strong> قانون المسافة بين نقطتين قطبيتين يعتمد على:<br>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q13" value="a" class="ml-2"> أ) نظرية فيثاغورس</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q13" value="b" class="ml-2"> ب) قانون الجيب</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q13" value="c" class="ml-2"> ج) قانون جيب التمام</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q13" value="d" class="ml-2"> د) قانون الظل</label>
-                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: ج) d² = r₁² + r₂² - 2r₁r₂cos(θ₂-θ₁)</div>
-                </li>
-                <li class="border-r-4 border-teal-500 pr-4 py-2" id="q-14">
-                    <strong>14.</strong> في قانون المسافة القطبية، المقدار <span class="formula">(θ₂ - θ₁)</span> يمثل:<br>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q14" value="a" class="ml-2"> أ) مجموع الزاويتين</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q14" value="b" class="ml-2"> ب) الزاوية المحصورة بين الضلعين r₁ و r₂</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q14" value="c" class="ml-2"> ج) الفرق المطلق بين الإحداثيات</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q14" value="d" class="ml-2"> د) متوسط الزاويتين</label>
-                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: ب) هي الزاوية المقابلة للضلع المجهول d في المثلث</div>
-                </li>
-                <li class="border-r-4 border-teal-500 pr-4 py-2" id="q-15">
-                    <strong>15.</strong> الرسم البياني للمعادلة <span class="formula">r = k</span> (حيث k ثابت) يمثل:<br>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q15" value="a" class="ml-2"> أ) خطاً مستقيماً يمر بالأصل</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q15" value="b" class="ml-2"> ب) دائرة مركزها نقطة الأصل ونصف قطرها |k|</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q15" value="c" class="ml-2"> ج) قطعاً مكافئاً</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q15" value="d" class="ml-2"> د) حلزونياً</label>
-                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: ب) جميع النقاط على بعد ثابت k من الأصل تشكل دائرة</div>
-                </li>
-                <li class="border-r-4 border-teal-500 pr-4 py-2" id="q-16">
-                    <strong>16.</strong> الرسم البياني للمعادلة <span class="formula">θ = k</span> (حيث k ثابت) يمثل:<br>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q16" value="a" class="ml-2"> أ) دائرة</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q16" value="b" class="ml-2"> ب) خطاً مستقيماً يمر بنقطة الأصل</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q16" value="c" class="ml-2"> ج) نقطة واحدة</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q16" value="d" class="ml-2"> د) قطعاً ناقصاً</label>
-                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: ب) جميع النقاط التي تصنع زاوية ثابتة k تشكل خطاً مستقيماً عبر القطب</div>
-                </li>
-            </ol>
-        </section>
-
-        <!-- Submit Button -->
-        <div class="text-center no-print pb-8">
-            <button onclick="gradeExam()" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-lg px-10 py-4 rounded-xl font-bold shadow-xl transition transform hover:scale-105 cursor-pointer">
-                📝 تسليم وتصحيح الامتحان
-            </button>
-        </div>
+    <main class="max-w-4xl mx-auto space-y-8" id="exam-content">
+        <!-- Questions rendered by JS -->
     </main>
+
+    <!-- Submit Button -->
+    <div class="text-center no-print pb-8 mt-8">
+        <button onclick="gradeExam()" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-lg px-10 py-4 rounded-xl font-bold shadow-xl transition transform hover:scale-105 cursor-pointer" data-ar="📝 تسليم وتصحيح الامتحان" data-en="📝 Submit & Grade Exam">📝 تسليم وتصحيح الامتحان</button>
+    </div>
 
     <!-- Results Panel -->
     <div id="results-panel" class="max-w-4xl mx-auto mt-8 bg-white p-8 rounded-2xl shadow-2xl border-t-4 border-emerald-500 hidden no-print">
-        <h2 class="text-3xl font-bold text-gray-900 mb-6 text-center">📊 نتائج الامتحان</h2>
+        <h2 class="text-3xl font-bold text-gray-900 mb-6 text-center" data-ar="📊 نتائج الامتحان" data-en="📊 Exam Results">📊 نتائج الامتحان</h2>
         <div class="grid md:grid-cols-3 gap-4 mb-6">
-            <div class="bg-blue-50 p-4 rounded-xl text-center"><p>اسم الطالب</p><p id="res-name" class="font-bold text-xl text-teal-700">-</p></div>
-            <div class="bg-purple-50 p-4 rounded-xl text-center"><p>التاريخ</p><p id="res-date" class="font-bold text-xl text-purple-700">-</p></div>
-            <div class="bg-emerald-50 p-4 rounded-xl text-center"><p>المجموع</p><p id="res-total" class="font-bold text-3xl text-emerald-600">0 / 100</p></div>
+            <div class="bg-blue-50 p-4 rounded-xl text-center"><p data-ar="اسم الطالب" data-en="Student Name">اسم الطالب</p><p id="res-name" class="font-bold text-xl text-teal-700">-</p></div>
+            <div class="bg-purple-50 p-4 rounded-xl text-center"><p data-ar="التاريخ" data-en="Date">التاريخ</p><p id="res-date" class="font-bold text-xl text-purple-700">-</p></div>
+            <div class="bg-emerald-50 p-4 rounded-xl text-center"><p data-ar="المجموع" data-en="Score">المجموع</p><p id="res-total" class="font-bold text-3xl text-emerald-600">0 / 100</p></div>
         </div>
 
         <div class="text-center mb-6">
-            <span id="success-badge" class="success-badge grade-excellent">ممتاز - 100%</span>
+            <span id="success-badge" class="success-badge grade-excellent">-</span>
             <p id="success-percent" class="text-4xl font-bold text-emerald-600 mt-2">100%</p>
-            <p class="text-sm text-gray-500">نسبة النجاح</p>
+            <p class="text-sm text-gray-500" data-ar="نسبة النجاح" data-en="Success Rate">نسبة النجاح</p>
         </div>
 
         <div class="bg-gray-50 p-6 rounded-xl mb-6">
-            <h3 class="font-bold text-lg mb-4 text-gray-800">📈 تفصيل الأداء حسب القسم:</h3>
+            <h3 class="font-bold text-lg mb-4 text-gray-800" data-ar="📈 تفصيل الأداء حسب القسم:" data-en="📈 Performance Breakdown:">📈 تفصيل الأداء حسب القسم:</h3>
             <div class="space-y-3">
                 <div class="flex justify-between items-center">
-                    <span class="text-gray-700">النظام القطبي وتمثيل النقاط</span>
+                    <span class="text-gray-700" data-ar="النظام القطبي وتمثيل النقاط" data-en="Polar System & Plotting">النظام القطبي وتمثيل النقاط</span>
                     <span id="sec1-score" class="font-bold text-teal-600">0/4</span>
                 </div>
                 <div class="flex justify-between items-center">
-                    <span class="text-gray-700">التمثيلات المتعددة</span>
+                    <span class="text-gray-700" data-ar="التمثيلات المتعددة" data-en="Multiple Representations">التمثيلات المتعددة</span>
                     <span id="sec2-score" class="font-bold text-teal-600">0/4</span>
                 </div>
                 <div class="flex justify-between items-center">
-                    <span class="text-gray-700">التحويل بين الأنظمة</span>
+                    <span class="text-gray-700" data-ar="التحويل بين الأنظمة" data-en="Conversion Between Systems">التحويل بين الأنظمة</span>
                     <span id="sec3-score" class="font-bold text-teal-600">0/4</span>
                 </div>
                 <div class="flex justify-between items-center">
-                    <span class="text-gray-700">قانون المسافة والرسوم البيانية</span>
+                    <span class="text-gray-700" data-ar="قانون المسافة والرسوم البيانية" data-en="Distance Formula & Graphs">قانون المسافة والرسوم البيانية</span>
                     <span id="sec4-score" class="font-bold text-teal-600">0/4</span>
                 </div>
             </div>
         </div>
 
         <div class="text-center mb-6">
-            <button id="sendEmailBtn" onclick="sendResultsToEmail()" class="bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 text-white text-lg px-8 py-3 rounded-xl font-bold shadow-xl transition transform hover:scale-105 cursor-pointer">
-                📧 إرسال النتائج للمعلم
-            </button>
+            <button id="sendEmailBtn" onclick="sendResultsToEmail()" class="bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 text-white text-lg px-8 py-3 rounded-xl font-bold shadow-xl transition transform hover:scale-105 cursor-pointer" data-ar="📧 إرسال النتائج للمعلم" data-en="📧 Send Results to Teacher">📧 إرسال النتائج للمعلم</button>
             <p id="emailStatus" class="text-sm mt-2 text-center font-medium"></p>
         </div>
 
         <div class="flex gap-3 justify-center">
-            <button onclick="window.print()" class="bg-gray-700 text-white px-6 py-3 rounded-lg font-semibold">🖨️ طباعة النتائج</button>
+            <button onclick="window.print()" class="bg-gray-700 text-white px-6 py-3 rounded-lg font-semibold" data-ar="🖨️ طباعة النتائج" data-en="🖨️ Print Results">🖨️ طباعة النتائج</button>
         </div>
     </div>
 
     <footer class="max-w-4xl mx-auto mt-10 mb-8 text-center text-gray-500 text-sm no-print">
-        © الرياضيات للصف الثاني عشر عام | الإحداثيات القطبية (8.1) | Mr. Mohammed Hesham
+        © <span data-ar="الرياضيات للصف الحادي عشر متقدم - Inspire | الدرس 1.1: الإحداثيات القطبية" data-en="Grade 11 Advanced Math - Inspire | Lesson 1.1: Polar Coordinates">الرياضيات للصف الحادي عشر متقدم - Inspire | الدرس 1.1: الإحداثيات القطبية</span> | Mr. Mohammed Hesham
     </footer>
 
-    <script>
-        const PUBLIC_KEY = "Rb3Lq8tXaFmc5YHUH";
-        const SERVICE_ID = "service_w15m64i";
-        const TEMPLATE_ID = "template_5b0u2tq";
-        const TARGET_EMAIL = "mohammedhesham872@gmail.com";
-        (function(){ emailjs.init(PUBLIC_KEY); })();
-
-        let timeRemaining = 2700;
-        let timerInterval;
-
-        function startTimer() {
-            document.getElementById('timer-container').style.display = 'block';
-            timerInterval = setInterval(() => {
-                timeRemaining--;
-                const minutes = Math.floor(timeRemaining / 60);
-                const seconds = timeRemaining % 60;
-                const timerEl = document.getElementById('timer');
-                timerEl.textContent = `${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
-                if (timeRemaining <= 300) timerEl.classList.add('timer-warning');
-                if (timeRemaining <= 0) {
-                    clearInterval(timerInterval);
-                    alert("انتهى الوقت! سيتم تسليم الامتحان تلقائياً.");
-                    gradeExam();
+<script>
+// ==================== EXAM DATA (BILINGUAL) ====================
+const examData = {
+    sections: [
+        {
+            id: 'sec1',
+            title: { ar: '🔹 الجزء الأول: نظام الإحداثيات القطبية وتمثيل النقاط', en: '🔹 Part 1: Polar Coordinate System & Plotting Points' },
+            questions: [
+                {
+                    q: { ar: 'في النظام القطبي، يُحدد موقع النقطة باستخدام الزوج المرتب:', en: 'In the polar system, a point\'s location is defined by the ordered pair:' },
+                    options: [
+                        { ar: '(x, y)', en: '(x, y)' },
+                        { ar: '(r, θ)', en: '(r, θ)' },
+                        { ar: '(θ, r)', en: '(θ, r)' },
+                        { ar: '(y, x)', en: '(y, x)' }
+                    ],
+                    correct: 1,
+                    answer: { ar: 'حيث r نصف القطر و θ الزاوية', en: 'where r is the radius and θ is the angle' }
+                },
+                {
+                    q: { ar: 'إذا كانت قيمة r سالبة، فإننا نتحرك:', en: 'If the value of r is negative, we move:' },
+                    options: [
+                        { ar: 'مسافة |r| في اتجاه الزاوية θ', en: 'distance |r| in the direction of angle θ' },
+                        { ar: 'مسافة |r| في الاتجاه المعاكس تماماً للزاوية θ', en: 'distance |r| in the exact opposite direction of θ' },
+                        { ar: 'مسافة r في اتجاه عقارب الساعة', en: 'distance r clockwise' },
+                        { ar: 'لا يمكن أن يكون r سالباً', en: 'r cannot be negative' }
+                    ],
+                    correct: 1,
+                    answer: { ar: 'ننعكس 180° عن اتجاه الزاوية الأصلية', en: 'We reflect 180° from the original angle direction' }
+                },
+                {
+                    q: { ar: 'النقطة (-1.5, π) تعني عملياً:', en: 'The point (-1.5, π) practically means:' },
+                    options: [
+                        { ar: 'التحرك 1.5 وحدة في اتجاه 180°', en: 'Move 1.5 units in the 180° direction' },
+                        { ar: 'التحرك 1.5 وحدة في الاتجاه المعاكس لـ 180° (أي عند 0°)', en: 'Move 1.5 units opposite to 180° (i.e., at 0°)' },
+                        { ar: 'التحرك -1.5 وحدة في اتجاه 90°', en: 'Move -1.5 units in the 90° direction' },
+                        { ar: 'النقطة تقع في الربع الثاني', en: 'The point lies in the second quadrant' }
+                    ],
+                    correct: 1,
+                    answer: { ar: 'عكس اتجاه π (180°) هو 0°، والمسافة 1.5', en: 'Opposite of π (180°) is 0°, and the distance is 1.5' }
+                },
+                {
+                    q: { ar: 'الزوايا السالبة في النظام القطبي تعني الدوران:', en: 'Negative angles in the polar system mean rotation:' },
+                    options: [
+                        { ar: 'عكس عقارب الساعة', en: 'Counter-clockwise' },
+                        { ar: 'في اتجاه عقارب الساعة', en: 'Clockwise' },
+                        { ar: 'لا يوجد زوايا سالبة', en: 'There are no negative angles' },
+                        { ar: 'تعتمد على قيمة r', en: 'Depends on the value of r' }
+                    ],
+                    correct: 1,
+                    answer: { ar: 'الموجب عكس العقارب، والسالب مع العقارب', en: 'Positive is counter-clockwise, negative is clockwise' }
                 }
-            }, 1000);
-        }
-
-        function toggleAnswers() {
-            document.querySelectorAll('.answer-box').forEach(el => el.classList.toggle('hidden'));
-        }
-
-        function gradeExam() {
-            let correctCount = 0;
-            const correctAnswers = [
-                'b','b','b','b',  // Q1-4: Polar System & Plotting
-                'b','b','d','d',  // Q5-8: Multiple Representations
-                'b','b','c','c',  // Q9-12: Conversion
-                'c','b','b','b'   // Q13-16: Distance & Graphs
-            ];
-
-            let sec1 = 0, sec2 = 0, sec3 = 0, sec4 = 0;
-
-            for(let i=1; i<=16; i++){
-                const selected = document.querySelector(`input[name="q${i}"]:checked`);
-                const li = document.getElementById(`q-${i}`);
-                const isCorrect = selected && selected.value === correctAnswers[i-1];
-                
-                if (isCorrect) {
-                    correctCount++;
-                    li.classList.add('correct');
-                    li.classList.remove('incorrect');
-                    if (i <= 4) sec1++;
-                    else if (i <= 8) sec2++;
-                    else if (i <= 12) sec3++;
-                    else sec4++;
-                } else {
-                    li.classList.add('incorrect');
-                    li.classList.remove('correct');
+            ]
+        },
+        {
+            id: 'sec2',
+            title: { ar: '🔹 الجزء الثاني: التمثيلات المتعددة للنقطة الواحدة', en: '🔹 Part 2: Multiple Representations of the Same Point' },
+            questions: [
+                {
+                    q: { ar: 'لإيجاد تمثيل مكافئ لنفس النقطة بإضافة دورات كاملة، نستخدم:', en: 'To find an equivalent representation by adding full rotations, we use:' },
+                    options: [
+                        { ar: '(r, θ ± 180°n)', en: '(r, θ ± 180°n)' },
+                        { ar: '(r, θ ± 360°n) أو (r, θ ± 2πn)', en: '(r, θ ± 360°n) or (r, θ ± 2πn)' },
+                        { ar: '(-r, θ ± 360°n)', en: '(-r, θ ± 360°n)' },
+                        { ar: '(r, θ ± 90°n)', en: '(r, θ ± 90°n)' }
+                    ],
+                    correct: 1,
+                    answer: { ar: 'إضافة أو طرح 360° (أو 2π) يعطي نفس الموقع', en: 'Adding or subtracting 360° (or 2π) gives the same location' }
+                },
+                {
+                    q: { ar: 'لإيجاد تمثيل مكافئ بعكس الاتجاه، نستخدم الصيغة:', en: 'To find an equivalent representation by reversing direction, we use:' },
+                    options: [
+                        { ar: '(r, θ + 180°)', en: '(r, θ + 180°)' },
+                        { ar: '(-r, θ ± 180° ± 360°n)', en: '(-r, θ ± 180° ± 360°n)' },
+                        { ar: '(r, -θ)', en: '(r, -θ)' },
+                        { ar: '(-r, -θ)', en: '(-r, -θ)' }
+                    ],
+                    correct: 1,
+                    answer: { ar: 'نعكس إشارة r ونضيف/نطرح 180°', en: 'We negate r and add/subtract 180°' }
+                },
+                {
+                    q: { ar: 'النقطة (4, 135°) تكافئ جميع ما يلي ما عدا:', en: 'The point (4, 135°) is equivalent to all of the following EXCEPT:' },
+                    options: [
+                        { ar: '(4, -225°)', en: '(4, -225°)' },
+                        { ar: '(-4, 315°)', en: '(-4, 315°)' },
+                        { ar: '(-4, -45°)', en: '(-4, -45°)' },
+                        { ar: '(4, 225°)', en: '(4, 225°)' }
+                    ],
+                    correct: 3,
+                    answer: { ar: '(4, 225°) نقطة مختلفة لأنها بنفس الإشارة الموجبة لكن بزاوية مختلفة ليست دورة كاملة', en: '(4, 225°) is a different point because it has the same positive sign but a different angle that is not a full rotation' }
+                },
+                {
+                    q: { ar: 'النقطة الواحدة في النظام القطبي لها عدد من التمثيلات يساوي:', en: 'A single point in the polar system has a number of representations equal to:' },
+                    options: [
+                        { ar: 'تمثيل واحد فقط', en: 'Only one representation' },
+                        { ar: 'تمثيلين فقط', en: 'Only two representations' },
+                        { ar: 'أربعة تمثيلات', en: 'Four representations' },
+                        { ar: 'عدد لا نهائي من التمثيلات', en: 'An infinite number of representations' }
+                    ],
+                    correct: 3,
+                    answer: { ar: 'بسبب إمكانية إضافة دورات كاملة وعكس الاتجاه', en: 'Due to the ability to add full rotations and reverse direction' }
                 }
-            }
-
-            const score = (correctCount / 16) * 100;
-            const successRate = Math.round(score);
-            
-            document.getElementById('res-total').textContent = `${Math.round(score)} / 100`;
-            document.getElementById('res-name').textContent = document.getElementById('studentName').value || 'طالب';
-            document.getElementById('res-date').textContent = new Date().toLocaleDateString('ar-AE');
-            
-            document.getElementById('sec1-score').textContent = `${sec1}/4`;
-            document.getElementById('sec2-score').textContent = `${sec2}/4`;
-            document.getElementById('sec3-score').textContent = `${sec3}/4`;
-            document.getElementById('sec4-score').textContent = `${sec4}/4`;
-            
-            const badge = document.getElementById('success-badge');
-            const percent = document.getElementById('success-percent');
-            percent.textContent = `${successRate}%`;
-            
-            if(successRate >= 90) { badge.textContent = 'ممتاز'; badge.className = 'success-badge grade-excellent'; }
-            else if(successRate >= 75) { badge.textContent = 'جيد جداً'; badge.className = 'success-badge grade-good'; }
-            else if(successRate >= 50) { badge.textContent = 'جيد'; badge.className = 'success-badge grade-pass'; }
-            else { badge.textContent = 'يحتاج تحسين'; badge.className = 'success-badge grade-fail'; }
-            
-            document.getElementById('results-panel').classList.remove('hidden');
-            document.getElementById('results-panel').scrollIntoView({ behavior: 'smooth' });
-            document.getElementById('sendEmailBtn').classList.remove('hidden');
+            ]
+        },
+        {
+            id: 'sec3',
+            title: { ar: '🔹 الجزء الثالث: التحويل بين القطبية والديكارتية', en: '🔹 Part 3: Conversion Between Polar and Cartesian' },
+            questions: [
+                {
+                    q: { ar: 'للتحويل من قطبي إلى ديكارتي، نستخدم العلاقتين:', en: 'To convert from polar to Cartesian, we use the two relations:' },
+                    options: [
+                        { ar: 'x = r sin θ, y = r cos θ', en: 'x = r sin θ, y = r cos θ' },
+                        { ar: 'x = r cos θ, y = r sin θ', en: 'x = r cos θ, y = r sin θ' },
+                        { ar: 'x = r tan θ, y = r cot θ', en: 'x = r tan θ, y = r cot θ' },
+                        { ar: 'x = r² cos θ, y = r² sin θ', en: 'x = r² cos θ, y = r² sin θ' }
+                    ],
+                    correct: 1,
+                    answer: { ar: 'x = r cos θ و y = r sin θ', en: 'x = r cos θ and y = r sin θ' }
+                },
+                {
+                    q: { ar: 'لإيجاد r من الإحداثيات الديكارتية، نستخدم:', en: 'To find r from Cartesian coordinates, we use:' },
+                    options: [
+                        { ar: 'r = x + y', en: 'r = x + y' },
+                        { ar: 'r = √(x² + y²)', en: 'r = √(x² + y²)' },
+                        { ar: 'r = x² + y²', en: 'r = x² + y²' },
+                        { ar: 'r = y/x', en: 'r = y/x' }
+                    ],
+                    correct: 1,
+                    answer: { ar: 'حسب نظرية فيثاغورس', en: 'According to the Pythagorean theorem' }
+                },
+                {
+                    q: { ar: 'عند حساب θ = tan⁻¹(y/x) وكانت النقطة في الربع الثاني أو الثالث، يجب:', en: 'When calculating θ = tan⁻¹(y/x) and the point is in the 2nd or 3rd quadrant, we must:' },
+                    options: [
+                        { ar: 'استخدام النتيجة كما هي', en: 'Use the result as is' },
+                        { ar: 'إضافة 90° للنتيجة', en: 'Add 90° to the result' },
+                        { ar: 'إضافة 180° للنتيجة', en: 'Add 180° to the result' },
+                        { ar: 'طرح 180° من النتيجة', en: 'Subtract 180° from the result' }
+                    ],
+                    correct: 2,
+                    answer: { ar: 'الآلة تعطي الربع الأول أو الرابع فقط، لذا نضيف 180° للربعين الثاني والثالث', en: 'The calculator only gives Q1 or Q4, so we add 180° for Q2 and Q3' }
+                },
+                {
+                    q: { ar: 'العلاقة المستخدمة لإيجاد الزاوية θ من الديكارتي هي:', en: 'The relation used to find angle θ from Cartesian is:' },
+                    options: [
+                        { ar: 'tan θ = x/y', en: 'tan θ = x/y' },
+                        { ar: 'sin θ = y/x', en: 'sin θ = y/x' },
+                        { ar: 'tan θ = y/x', en: 'tan θ = y/x' },
+                        { ar: 'cos θ = x/y', en: 'cos θ = x/y' }
+                    ],
+                    correct: 2,
+                    answer: { ar: 'tan θ = y/x مع مراعاة الربع الصحيح', en: 'tan θ = y/x considering the correct quadrant' }
+                }
+            ]
+        },
+        {
+            id: 'sec4',
+            title: { ar: '🔹 الجزء الرابع: قانون المسافة والرسوم البيانية الأساسية', en: '🔹 Part 4: Distance Formula & Basic Graphs' },
+            questions: [
+                {
+                    q: { ar: 'قانون المسافة بين نقطتين قطبيتين يعتمد على:', en: 'The distance formula between two polar points is based on:' },
+                    options: [
+                        { ar: 'نظرية فيثاغورس', en: 'Pythagorean theorem' },
+                        { ar: 'قانون الجيب', en: 'Law of Sines' },
+                        { ar: 'قانون جيب التمام', en: 'Law of Cosines' },
+                        { ar: 'قانون الظل', en: 'Law of Tangents' }
+                    ],
+                    correct: 2,
+                    answer: { ar: 'd² = r₁² + r₂² - 2r₁r₂cos(θ₂-θ₁)', en: 'd² = r₁² + r₂² - 2r₁r₂cos(θ₂-θ₁)' }
+                },
+                {
+                    q: { ar: 'في قانون المسافة القطبية، المقدار (θ₂ - θ₁) يمثل:', en: 'In the polar distance formula, the quantity (θ₂ - θ₁) represents:' },
+                    options: [
+                        { ar: 'مجموع الزاويتين', en: 'The sum of the two angles' },
+                        { ar: 'الزاوية المحصورة بين الضلعين r₁ و r₂', en: 'The angle between sides r₁ and r₂' },
+                        { ar: 'الفرق المطلق بين الإحداثيات', en: 'The absolute difference between coordinates' },
+                        { ar: 'متوسط الزاويتين', en: 'The average of the two angles' }
+                    ],
+                    correct: 1,
+                    answer: { ar: 'هي الزاوية المقابلة للضلع المجهول d في المثلث', en: 'It is the angle opposite the unknown side d in the triangle' }
+                },
+                {
+                    q: { ar: 'الرسم البياني للمعادلة r = k (حيث k ثابت) يمثل:', en: 'The graph of the equation r = k (where k is constant) represents:' },
+                    options: [
+                        { ar: 'خطاً مستقيماً يمر بالأصل', en: 'A straight line through the origin' },
+                        { ar: 'دائرة مركزها نقطة الأصل ونصف قطرها |k|', en: 'A circle centered at origin with radius |k|' },
+                        { ar: 'قطعاً مكافئاً', en: 'A parabola' },
+                        { ar: 'حلزونياً', en: 'A spiral' }
+                    ],
+                    correct: 1,
+                    answer: { ar: 'جميع النقاط على بعد ثابت k من الأصل تشكل دائرة', en: 'All points at constant distance k from origin form a circle' }
+                },
+                {
+                    q: { ar: 'الرسم البياني للمعادلة θ = k (حيث k ثابت) يمثل:', en: 'The graph of the equation θ = k (where k is constant) represents:' },
+                    options: [
+                        { ar: 'دائرة', en: 'A circle' },
+                        { ar: 'خطاً مستقيماً يمر بنقطة الأصل', en: 'A straight line through the origin' },
+                        { ar: 'نقطة واحدة', en: 'A single point' },
+                        { ar: 'قطعاً ناقصاً', en: 'An ellipse' }
+                    ],
+                    correct: 1,
+                    answer: { ar: 'جميع النقاط التي تصنع زاوية ثابتة k تشكل خطاً مستقيماً عبر القطب', en: 'All points making constant angle k form a straight line through the pole' }
+                }
+            ]
         }
+    ]
+};
 
-        function sendResultsToEmail() {
-            const btn = document.getElementById('sendEmailBtn');
-            const status = document.getElementById('emailStatus');
-            btn.disabled = true;
-            btn.textContent = '⏳ جاري الإرسال...';
+// ==================== STATE ====================
+let currentLang = 'ar';
+let timeRemaining = 2700;
+let timerInterval;
 
-            const name = document.getElementById('studentName').value || 'N/A';
-            const studentClass = document.getElementById('studentClass').value || 'غير محدد';
-            const date = document.querySelector('input[type="text"]').value || new Date().toLocaleDateString('ar-AE');
-            const score = document.getElementById('res-total').textContent;
-            const successRate = document.getElementById('success-percent').textContent;
-            const sec1 = document.getElementById('sec1-score').textContent;
-            const sec2 = document.getElementById('sec2-score').textContent;
-            const sec3 = document.getElementById('sec3-score').textContent;
-            const sec4 = document.getElementById('sec4-score').textContent;
+// ==================== LANGUAGE SWITCHER ====================
+function setLanguage(lang) {
+    currentLang = lang;
+    document.documentElement.lang = lang;
+    document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+    
+    // Update toggle buttons
+    document.getElementById('btn-ar').classList.toggle('active', lang === 'ar');
+    document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+    
+    // Update body font class
+    document.body.classList.toggle('en-mode', lang === 'en');
+    
+    // Update all elements with data-ar/data-en attributes
+    document.querySelectorAll('[data-ar][data-en]').forEach(el => {
+        el.textContent = el.getAttribute(`data-${lang}`);
+    });
+    
+    // Re-render exam content
+    renderExam();
+}
 
-            let answersHTML = `<div dir="rtl" style="font-family: 'Cairo', sans-serif;">
-                <h3 style="color:#0d9488;">📊 تفصيل الأداء - امتحان الإحداثيات القطبية (8.1):</h3>
-                <p><strong>الطالب:</strong> ${name} | <strong>الشعبة:</strong> ${studentClass}</p>
-                <ul>
-                    <li>النظام القطبي وتمثيل النقاط: ${sec1}</li>
-                    <li>التمثيلات المتعددة: ${sec2}</li>
-                    <li>التحويل بين الأنظمة: ${sec3}</li>
-                    <li>قانون المسافة والرسوم البيانية: ${sec4}</li>
-                </ul>
-                <table style="border:1px solid #e5e7eb; border-collapse:collapse; width:100%; font-size:14px; direction: rtl;">
-                <tr style="background:#0d9488; color:white;"><th style="border:1px solid #e5e7eb; padding:8px;">السؤال</th><th style="border:1px solid #e5e7eb; padding:8px;">الإجابة المختارة</th><th style="border:1px solid #e5e7eb; padding:8px;">الحالة</th></tr>`;
+// ==================== RENDER EXAM ====================
+function renderExam() {
+    const container = document.getElementById('exam-content');
+    const labels = {
+        ar: { option: ['أ', 'ب', 'ج', 'د'], answer: '✅ الإجابة:', correct: '✅ صحيح', wrong: '❌ خطأ' },
+        en: { option: ['A', 'B', 'C', 'D'], answer: '✅ Answer:', correct: '✅ Correct', wrong: '❌ Wrong' }
+    };
+    const lbl = labels[currentLang];
+    const isRTL = currentLang === 'ar';
+    
+    let html = '';
+    examData.sections.forEach((section, sIdx) => {
+        html += `
+        <section class="bg-white p-6 rounded-xl shadow-lg">
+            <h2 class="text-xl font-bold mb-4 text-teal-700">${section.title[currentLang]}</h2>
+            <ol id="section-${sIdx}-list" class="space-y-4 text-sm">`;
             
-            const correctAnswers = ['b','b','b','b','b','b','d','d','b','b','c','c','c','b','b','b'];
+        section.questions.forEach((q, qIdx) => {
+            const globalIdx = sIdx * 4 + qIdx;
+            const borderSide = isRTL ? 'border-r-4 pr-4' : 'border-l-4 pl-4';
+            html += `
+                <li class="${borderSide} border-teal-500 py-2" id="q-${globalIdx}">
+                    <strong>${globalIdx + 1}.</strong> ${q.q[currentLang]}<br>`;
+                    
+            q.options.forEach((opt, oIdx) => {
+                const radioSide = isRTL ? 'mr-4 ml-2' : 'ml-4 mr-2';
+                html += `
+                    <label class="cursor-pointer block mt-1 ${isRTL ? 'mr-4' : 'ml-4'}">
+                        <input type="radio" name="q${globalIdx}" value="${String.fromCharCode(97 + oIdx)}" class="${radioSide}"> 
+                        ${lbl.option[oIdx]}) ${opt[currentLang]}
+                    </label>`;
+            });
             
-            for(let i=1; i<=16; i++) {
-                const sel = document.querySelector(`input[name="q${i}"]:checked`);
-                const isCorrect = sel && sel.value === correctAnswers[i-1];
-                answersHTML += `<tr><td style="border:1px solid #e5e7eb; padding:6px;">${i}</td><td style="border:1px solid #e5e7eb; padding:6px;">${sel ? sel.value : '-'}</td><td style="border:1px solid #e5e7eb; padding:6px; color:${isCorrect ? 'green' : 'red'}">${isCorrect ? '✅ صحيح' : '❌ خطأ'}</td></tr>`;
-            }
-            answersHTML += '</table></div>';
+            html += `
+                    <div class="answer-box text-green-700 mt-2 font-medium hidden">
+                        ${lbl.answer} ${lbl.option[q.correct]}) ${q.options[q.correct][currentLang]} — ${q.answer[currentLang]}
+                    </div>
+                </li>`;
+        });
+        
+        html += `
+            </ol>
+        </section>`;
+    });
+    
+    container.innerHTML = html;
+}
 
-            const templateParams = {
-                to_email: TARGET_EMAIL,
-                student_name: name,
-                exam_date: date,
-                total_score: score,
-                success_rate: successRate,
-                answers_table: answersHTML
-            };
-
-            emailjs.send(SERVICE_ID, TEMPLATE_ID, templateParams)
-                .then(() => {
-                    status.textContent = '✅ تم الإرسال بنجاح! تحقق من Gmail.';
-                    status.style.color = '#059669';
-                    btn.textContent = '✓ تم الإرسال';
-                })
-                .catch(err => {
-                    status.textContent = '❌ فشل الإرسال. تحقق من الإعدادات.';
-                    status.style.color = '#dc2626';
-                    btn.disabled = false;
-                    btn.textContent = '📧 إعادة المحاولة';
-                    console.error('EmailJS Error:', err);
-                });
+// ==================== TIMER ====================
+function startTimer() {
+    document.getElementById('timer-container').style.display = 'block';
+    timerInterval = setInterval(() => {
+        timeRemaining--;
+        const minutes = Math.floor(timeRemaining / 60);
+        const seconds = timeRemaining % 60;
+        const timerEl = document.getElementById('timer');
+        timerEl.textContent = `${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
+        if (timeRemaining <= 300) timerEl.classList.add('timer-warning');
+        if (timeRemaining <= 0) {
+            clearInterval(timerInterval);
+            alert(currentLang === 'ar' ? "انتهى الوقت! سيتم تسليم الامتحان تلقائياً." : "Time's up! Exam will be submitted automatically.");
+            gradeExam();
         }
+    }, 1000);
+}
 
-        window.addEventListener('DOMContentLoaded', startTimer);
-    </script>
+function toggleAnswers() {
+    document.querySelectorAll('.answer-box').forEach(el => el.classList.toggle('hidden'));
+}
+
+// ==================== GRADING ====================
+function gradeExam() {
+    let correctCount = 0;
+    const correctAnswersLetters = [
+        'b','b','b','b',  // Q1-4
+        'b','b','d','d',  // Q5-8
+        'b','b','c','c',  // Q9-12
+        'c','b','b','b'   // Q13-16
+    ];
+    
+    let sec1 = 0, sec2 = 0, sec3 = 0, sec4 = 0;
+    
+    for (let i = 1; i <= 16; i++) {
+        const selected = document.querySelector(`input[name="q${i}"]:checked`);
+        const li = document.getElementById(`q-${i}`);
+        const isCorrect = selected && selected.value === correctAnswersLetters[i-1];
+        
+        if (isCorrect) {
+            correctCount++;
+            li.classList.add('correct');
+            li.classList.remove('incorrect');
+            if (i <= 4) sec1++;
+            else if (i <= 8) sec2++;
+            else if (i <= 12) sec3++;
+            else sec4++;
+        } else {
+            li.classList.add('incorrect');
+            li.classList.remove('correct');
+        }
+    }
+
+    const score = (correctCount / 16) * 100;
+    const successRate = Math.round(score);
+    
+    document.getElementById('res-total').textContent = `${Math.round(score)} / 100`;
+    document.getElementById('res-name').textContent = document.getElementById('studentName').value || (currentLang === 'ar' ? 'طالب' : 'Student');
+    document.getElementById('res-date').textContent = new Date().toLocaleDateString(currentLang === 'ar' ? 'ar-AE' : 'en-US');
+    
+    document.getElementById('sec1-score').textContent = `${sec1}/4`;
+    document.getElementById('sec2-score').textContent = `${sec2}/4`;
+    document.getElementById('sec3-score').textContent = `${sec3}/4`;
+    document.getElementById('sec4-score').textContent = `${sec4}/4`;
+    
+    const badge = document.getElementById('success-badge');
+    const percent = document.getElementById('success-percent');
+    percent.textContent = `${successRate}%`;
+    
+    if (currentLang === 'ar') {
+        if (successRate >= 90) { badge.textContent = 'ممتاز'; badge.className = 'success-badge grade-excellent'; }
+        else if (successRate >= 75) { badge.textContent = 'جيد جداً'; badge.className = 'success-badge grade-good'; }
+        else if (successRate >= 50) { badge.textContent = 'جيد'; badge.className = 'success-badge grade-pass'; }
+        else { badge.textContent = 'يحتاج تحسين'; badge.className = 'success-badge grade-fail'; }
+    } else {
+        if (successRate >= 90) { badge.textContent = 'Excellent'; badge.className = 'success-badge grade-excellent'; }
+        else if (successRate >= 75) { badge.textContent = 'Very Good'; badge.className = 'success-badge grade-good'; }
+        else if (successRate >= 50) { badge.textContent = 'Good'; badge.className = 'success-badge grade-pass'; }
+        else { badge.textContent = 'Needs Improvement'; badge.className = 'success-badge grade-fail'; }
+    }
+    
+    document.getElementById('results-panel').classList.remove('hidden');
+    document.getElementById('results-panel').scrollIntoView({ behavior: 'smooth' });
+    document.getElementById('sendEmailBtn').classList.remove('hidden');
+}
+
+// ==================== EMAIL ====================
+function sendResultsToEmail() {
+    const btn = document.getElementById('sendEmailBtn');
+    const status = document.getElementById('emailStatus');
+    btn.disabled = true;
+    btn.textContent = currentLang === 'ar' ? '⏳ جاري الإرسال...' : '⏳ Sending...';
+
+    const name = document.getElementById('studentName').value || 'N/A';
+    const studentClass = document.getElementById('studentClass').value || (currentLang === 'ar' ? 'غير محدد' : 'N/A');
+    const date = document.querySelector('input[type="text"]').value || new Date().toLocaleDateString(currentLang === 'ar' ? 'ar-AE' : 'en-US');
+    const score = document.getElementById('res-total').textContent;
+    const successRate = document.getElementById('success-percent').textContent;
+    const sec1 = document.getElementById('sec1-score').textContent;
+    const sec2 = document.getElementById('sec2-score').textContent;
+    const sec3 = document.getElementById('sec3-score').textContent;
+    const sec4 = document.getElementById('sec4-score').textContent;
+
+    const dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+    const font = currentLang === 'ar' ? 'Cairo' : 'Inter';
+    
+    const sectionNames = {
+        ar: ['النظام القطبي وتمثيل النقاط', 'التمثيلات المتعددة', 'التحويل بين الأنظمة', 'قانون المسافة والرسوم البيانية'],
+        en: ['Polar System & Plotting', 'Multiple Representations', 'Conversion Between Systems', 'Distance Formula & Graphs']
+    };
+    const sn = sectionNames[currentLang];
+
+    let answersHTML = `<div dir="${dir}" style="font-family: '${font}', sans-serif;">
+        <h3 style="color:#0d9488;">📊 ${currentLang === 'ar' ? 'تفصيل الأداء - امتحان الإحداثيات القطبية (1.1)' : 'Performance Details - Polar Coordinates Exam (1.1)'}:</h3>
+        <p><strong>${currentLang === 'ar' ? 'الطالب' : 'Student'}:</strong> ${name} | <strong>${currentLang === 'ar' ? 'الشعبة' : 'Class'}:</strong> ${studentClass}</p>
+        <ul>
+            <li>${sn[0]}: ${sec1}</li>
+            <li>${sn[1]}: ${sec2}</li>
+            <li>${sn[2]}: ${sec3}</li>
+            <li>${sn[3]}: ${sec4}</li>
+        </ul>
+        <table style="border:1px solid #e5e7eb; border-collapse:collapse; width:100%; font-size:14px; direction: ${dir};">
+        <tr style="background:#0d9488; color:white;"><th style="border:1px solid #e5e7eb; padding:8px;">${currentLang === 'ar' ? 'السؤال' : 'Q#'}</th><th style="border:1px solid #e5e7eb; padding:8px;">${currentLang === 'ar' ? 'الإجابة المختارة' : 'Selected'}</th><th style="border:1px solid #e5e7eb; padding:8px;">${currentLang === 'ar' ? 'الحالة' : 'Status'}</th></tr>`;
+    
+    const correctAnswersLetters = ['b','b','b','b','b','b','d','d','b','b','c','c','c','b','b','b'];
+    
+    for (let i = 1; i <= 16; i++) {
+        const sel = document.querySelector(`input[name="q${i}"]:checked`);
+        const isCorrect = sel && sel.value === correctAnswersLetters[i-1];
+        answersHTML += `<tr><td style="border:1px solid #e5e7eb; padding:6px;">${i}</td><td style="border:1px solid #e5e7eb; padding:6px;">${sel ? sel.value.toUpperCase() : '-'}</td><td style="border:1px solid #e5e7eb; padding:6px; color:${isCorrect ? 'green' : 'red'}">${isCorrect ? '✅ ' + (currentLang === 'ar' ? 'صحيح' : 'Correct') : '❌ ' + (currentLang === 'ar' ? 'خطأ' : 'Wrong')}</td></tr>`;
+    }
+    answersHTML += '</table></div>';
+
+    const PUBLIC_KEY = "Rb3Lq8tXaFmc5YHUH";
+    const SERVICE_ID = "service_w15m64i";
+    const TEMPLATE_ID = "template_5b0u2tq";
+    const TARGET_EMAIL = "mohammedhesham872@gmail.com";
+
+    emailjs.init(PUBLIC_KEY);
+    const templateParams = {
+        to_email: TARGET_EMAIL,
+        student_name: name,
+        exam_date: date,
+        total_score: score,
+        success_rate: successRate,
+        answers_table: answersHTML
+    };
+
+    emailjs.send(SERVICE_ID, TEMPLATE_ID, templateParams)
+        .then(() => {
+            status.textContent = currentLang === 'ar' ? '✅ تم الإرسال بنجاح! تحقق من Gmail.' : '✅ Sent successfully! Check Gmail.';
+            status.style.color = '#059669';
+            btn.textContent = currentLang === 'ar' ? '✓ تم الإرسال' : '✓ Sent';
+        })
+        .catch(err => {
+            status.textContent = currentLang === 'ar' ? '❌ فشل الإرسال. تحقق من الإعدادات.' : '❌ Failed to send. Check settings.';
+            status.style.color = '#dc2626';
+            btn.disabled = false;
+            btn.textContent = currentLang === 'ar' ? '📧 إعادة المحاولة' : '📧 Retry';
+            console.error('EmailJS Error:', err);
+        });
+}
+
+// Initialize
+window.addEventListener('DOMContentLoaded', () => {
+    renderExam();
+    startTimer();
+});
+</script>
 </body>
 </html>
